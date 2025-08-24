@@ -1,0 +1,2913 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Licitações - Obras&Blockchain</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --sidebar-width: 240px;
+            --sidebar-collapsed: 80px;
+            --yt-red: #ff0000;
+            --yt-dark: #212121;
+            --yt-dark-light: #3c3c3c;
+            --yt-text: #0f0f0f;
+            --yt-secondary: #606060;
+            --primary: #1976d2;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f9f9f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1060;
+            background: var(--yt-dark);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--yt-dark-light);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--yt-dark);
+            transition: width 0.2s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1000;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--yt-dark);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--yt-dark-light);
+            border-radius: 4px;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--yt-dark-light);
+            min-height: 56px;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            margin-right: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background: var(--yt-dark-light);
+        }
+
+        .logo {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .logo {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar-nav {
+            padding: 12px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px 10px 24px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            position: relative;
+            min-height: 40px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--yt-dark-light);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--yt-dark-light);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 24px;
+            flex-shrink: 0;
+            min-width: 24px;
+        }
+
+        .nav-icon i {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .nav-text {
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar.collapsed .nav-item {
+            padding: 16px;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.2s ease;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 20px 24px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Forms */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-rascunho {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .status-publicado {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-em_andamento {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-finalizado {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-cancelado {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* Tables */
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 16px;
+        }
+
+        .table tbody td {
+            padding: 16px;
+            border-top: 1px solid #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1050;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 80px 16px 16px 16px;
+            }
+            
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Utilities */
+        .d-none { display: none !important; }
+        .text-center { text-align: center !important; }
+        .text-muted { color: #6c757d !important; }
+        .fw-bold { font-weight: bold !important; }
+        .mb-0 { margin-bottom: 0 !important; }
+        .mb-3 { margin-bottom: 1rem !important; }
+        .me-2 { margin-right: 0.5rem !important; }
+        .mt-3 { margin-top: 1rem !important; }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="hamburger" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Obras&Blockchain</div>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-item active" data-section="dashboard">
+                    <div class="nav-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <span class="nav-text">Dashboard</span>
+                </div>
+                
+                <!-- Menu para Órgão Governamental -->
+                <div class="nav-item governo-only" data-section="criar-edital">
+                    <div class="nav-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <span class="nav-text">Criar Edital</span>
+                </div>
+                
+                <div class="nav-item governo-only" data-section="meus-editais">
+                    <div class="nav-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <span class="nav-text">Meus Editais</span>
+                </div>
+                
+                <!-- Menu para Empresas -->
+                <div class="nav-item empresa-only d-none" data-section="editais-disponiveis">
+                    <div class="nav-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <span class="nav-text">Editais Disponíveis</span>
+                </div>
+                
+                <div class="nav-item empresa-only d-none" data-section="minhas-propostas">
+                    <div class="nav-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <span class="nav-text">Minhas Propostas</span>
+                </div>
+                
+                <!-- Menu Público -->
+                <div class="nav-item" data-section="licitacoes-publicas">
+                    <div class="nav-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <span class="nav-text">Licitações Públicas</span>
+                </div>
+                
+                <div class="nav-item" data-section="historico">
+                    <div class="nav-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <span class="nav-text">Histórico</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-item" data-section="perfil">
+                    <div class="nav-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="nav-text">Perfil</span>
+                </div>
+                
+                <div class="nav-item" onclick="logout()">
+                    <div class="nav-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <span class="nav-text">Sair</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        <small class="text-muted" id="userWelcome">Bem-vindo ao sistema</small>
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-contract fa-3x text-primary mb-3"></i>
+                            <h3 class="mb-0" id="totalEditais">0</h3>
+                            <p class="text-muted">Total de Editais</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                            <h3 class="mb-0" id="editaisAbertos">0</h3>
+                            <p class="text-muted">Editais em Andamento</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-paper-plane fa-3x text-success mb-3"></i>
+                            <h3 class="mb-0" id="totalPropostas">0</h3>
+                            <p class="text-muted">Propostas Enviadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
+                            <h3 class="mb-0" id="licitacoesFinalizadas">0</h3>
+                            <p class="text-muted">Finalizadas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Atividades Recentes -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>Atividades Recentes
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="atividadesRecentes">
+                                <p class="text-muted text-center">Carregando atividades...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criar Edital Section (Governo) -->
+        <div class="content-section" id="criar-edital">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-plus-circle me-3"></i>Criar Novo Edital
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form id="formCriarEdital">
+                        <div class="row">
+                            <!-- Informações Básicas -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Informações Básicas
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="numeroEdital" class="form-label">Número do Edital *</label>
+                                    <input type="text" class="form-control" id="numeroEdital" required 
+                                           placeholder="Ex: 001/2025">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modalidade" class="form-label">Modalidade *</label>
+                                    <select class="form-select" id="modalidade" required>
+                                        <option value="">Selecione a modalidade</option>
+                                        <option value="concorrencia">Concorrência</option>
+                                        <option value="tomada_precos">Tomada de Preços</option>
+                                        <option value="convite">Convite</option>
+                                        <option value="pregao">Pregão</option>
+                                        <option value="concurso">Concurso</option>
+                                        <option value="leilao">Leilão</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="titulo" class="form-label">Título do Edital *</label>
+                                    <input type="text" class="form-control" id="titulo" required 
+                                           placeholder="Ex: Construção de Ponte sobre o Rio...">
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="descricao" class="form-label">Descrição/Objeto da Licitação *</label>
+                                    <textarea class="form-control" id="descricao" rows="4" required 
+                                              placeholder="Descreva detalhadamente o objeto da licitação, especificações técnicas, etc."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Critérios e Valores -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-gavel me-2"></i>Critérios de Julgamento e Valores
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tipoJulgamento" class="form-label">Tipo de Julgamento *</label>
+                                    <select class="form-select" id="tipoJulgamento" required>
+                                        <option value="">Selecione o critério</option>
+                                        <option value="menor_preco">Menor Preço</option>
+                                        <option value="melhor_tecnica">Melhor Técnica</option>
+                                        <option value="tecnica_preco">Técnica e Preço</option>
+                                        <option value="maior_lance">Maior Lance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valorEstimado" class="form-label">Valor Estimado (R$) *</label>
+                                    <input type="number" class="form-control" id="valorEstimado" step="0.01" required 
+                                           placeholder="0,00">
+                                </div>
+                            </div>
+                            
+                            <!-- Prazos -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-calendar-alt me-2"></i>Prazos e Datas
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dataAbertura" class="form-label">Data de Abertura *</label>
+                                    <input type="datetime-local" class="form-control" id="dataAbertura" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dataEntregaPropostas" class="form-label">Prazo para Entrega de Propostas *</label>
+                                    <input type="datetime-local" class="form-control" id="dataEntregaPropostas" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dataSessaoPublica" class="form-label">Data da Sessão Pública *</label>
+                                    <input type="datetime-local" class="form-control" id="dataSessaoPublica" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prazoExecucao" class="form-label">Prazo de Execução (dias) *</label>
+                                    <input type="number" class="form-control" id="prazoExecucao" required 
+                                           placeholder="Ex: 90">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="localExecucao" class="form-label">Local de Execução *</label>
+                                    <input type="text" class="form-control" id="localExecucao" required 
+                                           placeholder="Ex: Cidade - Estado">
+                                </div>
+                            </div>
+                            
+                            <!-- Upload do Edital -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-file-upload me-2"></i>Arquivo do Edital
+                                </h5>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="arquivoEdital" class="form-label">Arquivo do Edital (PDF) *</label>
+                                    <input type="file" class="form-control" id="arquivoEdital" accept=".pdf" required>
+                                    <div class="form-text">Arquivo PDF com o edital completo (máx. 10MB)</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Botões -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex gap-3">
+                                    <button type="button" class="btn btn-outline-primary" id="btnSalvarRascunho">
+                                        <i class="fas fa-save me-2"></i>Salvar como Rascunho
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-bullhorn me-2"></i>Publicar Edital
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                                        <i class="fas fa-times me-2"></i>Limpar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meus Editais Section (Governo) -->
+        <div class="content-section" id="meus-editais">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>
+                            <i class="fas fa-file-contract me-3"></i>Meus Editais
+                        </h1>
+                        <button class="btn btn-primary" onclick="showSection('criar-edital')">
+                            <i class="fas fa-plus me-2"></i>Novo Edital
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Lista de Editais</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="carregarMeusEditais()">
+                            <i class="fas fa-sync-alt me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Título</th>
+                                    <th>Modalidade</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Status</th>
+                                    <th>Data Abertura</th>
+                                    <th>Propostas</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaMeusEditais">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Carregando editais...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editais Disponíveis Section (Empresa) -->
+        <div class="content-section" id="editais-disponiveis">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-search me-3"></i>Editais Disponíveis
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="filtroModalidade" class="form-label">Modalidade</label>
+                            <select class="form-select" id="filtroModalidade">
+                                <option value="">Todas</option>
+                                <option value="concorrencia">Concorrência</option>
+                                <option value="tomada_precos">Tomada de Preços</option>
+                                <option value="pregao">Pregão</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtroValorMin" class="form-label">Valor Mínimo (R$)</label>
+                            <input type="number" class="form-control" id="filtroValorMin" placeholder="0,00">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtroValorMax" class="form-label">Valor Máximo (R$)</label>
+                            <input type="number" class="form-control" id="filtroValorMax" placeholder="0,00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button class="btn btn-primary w-100" onclick="filtrarEditais()">
+                                    <i class="fas fa-search me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de Editais -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Editais Abertos para Participação</h5>
+                </div>
+                <div class="card-body">
+                    <div id="listaEditaisDisponiveis">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando editais disponíveis...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Minhas Propostas Section (Empresa) -->
+        <div class="content-section" id="minhas-propostas">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-paper-plane me-3"></i>Minhas Propostas
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Propostas Enviadas</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="carregarMinhasPropostas()">
+                            <i class="fas fa-sync-alt me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Edital</th>
+                                    <th>Título</th>
+                                    <th>Minha Proposta</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Status</th>
+                                    <th>Data Envio</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaMinhasPropostas">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Carregando propostas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Licitações Públicas Section -->
+        <div class="content-section" id="licitacoes-publicas">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-eye me-3"></i>Licitações Públicas
+                        <small class="text-muted">Transparência e Controle Social</small>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Estatísticas Públicas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-contract fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicTotalEditais">0</h4>
+                            <small>Editais Publicados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicEditaisAbertos">0</h4>
+                            <small>Em Andamento</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicEditaisFinalizados">0</h4>
+                            <small>Finalizados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calculator fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicValorTotal">R$ 0</h4>
+                            <small>Valor Total</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista Pública de Licitações -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Todas as Licitações
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="listaLicitacoesPublicas">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando licitações públicas...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico Section -->
+        <div class="content-section" id="historico">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-history me-3"></i>Histórico Blockchain
+                        <small class="text-muted">Rastreabilidade Completa</small>
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-link me-2"></i>Cadeia de Blocos
+                        </h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="carregarHistoricoBlockchain()">
+                            <i class="fas fa-sync-alt me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="historicoBlockchain">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando histórico...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perfil Section -->
+        <div class="content-section" id="perfil">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-user me-3"></i>Meu Perfil
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações da Conta</h5>
+                </div>
+                <div class="card-body">
+                    <div id="perfilUsuario">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando perfil...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal para Detalhes do Edital -->
+    <div class="modal fade" id="modalDetalhesEdital" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-contract me-2"></i>Detalhes do Edital
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalDetalhesBody">
+                    <!-- Conteúdo carregado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Enviar Proposta -->
+    <div class="modal fade" id="modalEnviarProposta" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-paper-plane me-2"></i>Enviar Proposta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEnviarProposta">
+                        <input type="hidden" id="editalIdProposta">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Edital</label>
+                            <div id="infoEditalProposta" class="form-control-plaintext bg-light p-2 rounded">
+                                <!-- Info do edital -->
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valorProposta" class="form-label">Valor da Proposta (R$) *</label>
+                                    <input type="number" class="form-control" id="valorProposta" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prazoExecucaoProposta" class="form-label">Prazo de Execução (dias) *</label>
+                                    <input type="number" class="form-control" id="prazoExecucaoProposta" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricaoProposta" class="form-label">Descrição da Proposta *</label>
+                            <textarea class="form-control" id="descricaoProposta" rows="4" required
+                                      placeholder="Descreva sua proposta técnica e metodologia..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="arquivoProposta" class="form-label">Arquivo da Proposta (PDF) *</label>
+                            <input type="file" class="form-control" id="arquivoProposta" accept=".pdf" required>
+                            <div class="form-text">Arquivo PDF com a proposta completa (máx. 5MB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="documentosAnexos" class="form-label">Documentos Anexos</label>
+                            <input type="file" class="form-control" id="documentosAnexos" multiple
+                                   accept=".pdf,.doc,.docx,.jpg,.png">
+                            <div class="form-text">Documentos complementares (máx. 2MB cada)</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="enviarProposta()">
+                        <i class="fas fa-paper-plane me-1"></i>Enviar Proposta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Estado global da aplicação
+        let currentUser = null;
+        let userType = 'publico'; // governo, empresa, publico
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSidebar();
+            checkUserLogin();
+            loadDashboard();
+        });
+
+        // Sidebar functionality
+        function initializeSidebar() {
+            const toggler = document.getElementById('toggleBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+
+            function isMobile() {
+                return window.innerWidth < 769;
+            }
+
+            function toggleSidebar() {
+                if (isMobile()) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                }
+            }
+
+            toggler.addEventListener('click', toggleSidebar);
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+            // Close sidebar on mobile when clicking outside
+            document.addEventListener('click', (e) => {
+                if (isMobile() && sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    !toggler.contains(e.target) && 
+                    !mobileMenuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                if (!isMobile()) {
+                    sidebar.classList.remove('active');
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    sidebar.classList.toggle('collapsed', isCollapsed);
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            });
+
+            // Initialize sidebar state
+            if (!isMobile()) {
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                sidebar.classList.toggle('collapsed', isCollapsed);
+            }
+
+            // Navigation items
+            document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    showSection(section);
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Load section specific data
+                switch(sectionId) {
+                    case 'meus-editais':
+                        carregarMeusEditais();
+                        break;
+                    case 'editais-disponiveis':
+                        carregarEditaisDisponiveis();
+                        break;
+                    case 'minhas-propostas':
+                        carregarMinhasPropostas();
+                        break;
+                    case 'licitacoes-publicas':
+                        carregarLicitacoesPublicas();
+                        break;
+                    case 'historico':
+                        carregarHistoricoBlockchain();
+                        break;
+                    case 'perfil':
+                        carregarPerfil();
+                        break;
+                }
+            }
+        }
+
+        // User management
+        function checkUserLogin() {
+            // Simular usuário logado para demonstração
+            // Em produção, verificar sessão/token
+            currentUser = {
+                id: 1,
+                username: 'demo_governo',
+                type: 'governo',
+                orgao: 'Prefeitura Municipal'
+            };
+            userType = currentUser.type;
+            
+            updateUIForUserType();
+            updateUserWelcome();
+        }
+
+        function updateUIForUserType() {
+            const governoItems = document.querySelectorAll('.governo-only');
+            const empresaItems = document.querySelectorAll('.empresa-only');
+            
+            if (userType === 'governo') {
+                governoItems.forEach(item => item.classList.remove('d-none'));
+                empresaItems.forEach(item => item.classList.add('d-none'));
+            } else if (userType === 'empresa') {
+                governoItems.forEach(item => item.classList.add('d-none'));
+                empresaItems.forEach(item => item.classList.remove('d-none'));
+            } else {
+                governoItems.forEach(item => item.classList.add('d-none'));
+                empresaItems.forEach(item => item.classList.add('d-none'));
+            }
+        }
+
+        function updateUserWelcome() {
+            const welcomeElement = document.getElementById('userWelcome');
+            if (currentUser) {
+                const typeLabel = {
+                    'governo': 'Órgão Público',
+                    'empresa': 'Empresa',
+                    'publico': 'Usuário Público'
+                };
+                welcomeElement.textContent = `Bem-vindo, ${currentUser.username} (${typeLabel[userType]})`;
+            }
+        }
+
+        // Dashboard
+        function loadDashboard() {
+            // Simular dados para demonstração
+            document.getElementById('totalEditais').textContent = '12';
+            document.getElementById('editaisAbertos').textContent = '5';
+            document.getElementById('totalPropostas').textContent = '23';
+            document.getElementById('licitacoesFinalizadas').textContent = '7';
+            
+            // Carregar atividades recentes
+            const atividades = document.getElementById('atividadesRecentes');
+            atividades.innerHTML = `
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>Novo edital publicado</strong>
+                            <small>2 horas atrás</small>
+                        </div>
+                        <p class="mb-0">Edital 001/2025 - Construção de Ponte</p>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>Proposta recebida</strong>
+                            <small>4 horas atrás</small>
+                        </div>
+                        <p class="mb-0">Empresa XYZ enviou proposta para Edital 002/2025</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Edital management
+        function carregarMeusEditais() {
+            const tabela = document.getElementById('tabelaMeusEditais');
+            
+            // Simular dados
+            setTimeout(() => {
+                tabela.innerHTML = `
+                    <tr>
+                        <td>001/2025</td>
+                        <td>Construção de Ponte Municipal</td>
+                        <td><span class="badge bg-primary">Concorrência</span></td>
+                        <td>R$ 1.250.000,00</td>
+                        <td><span class="status-badge status-publicado">Publicado</span></td>
+                        <td>15/01/2025 09:00</td>
+                        <td><span class="badge bg-info">3</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="verDetalhesEdital(1)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editarEdital(1)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="verPropostas(1)">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002/2025</td>
+                        <td>Reforma da Escola Central</td>
+                        <td><span class="badge bg-warning text-dark">Pregão</span></td>
+                        <td>R$ 800.000,00</td>
+                        <td><span class="status-badge status-em_andamento">Em Andamento</span></td>
+                        <td>10/01/2025 14:00</td>
+                        <td><span class="badge bg-info">5</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="verDetalhesEdital(2)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editarEdital(2)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="verPropostas(2)">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }, 1000);
+        }
+
+        function carregarEditaisDisponiveis() {
+            const lista = document.getElementById('listaEditaisDisponiveis');
+            
+            setTimeout(() => {
+                lista.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Edital 001/2025</strong>
+                                        <span class="status-badge status-publicado">Aberto</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Construção de Ponte Municipal</h6>
+                                    <p class="text-muted">Prefeitura Municipal - Concorrência</p>
+                                    <p><strong>Valor Estimado:</strong> R$ 1.250.000,00</p>
+                                    <p><strong>Prazo para propostas:</strong> 20/01/2025 18:00</p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="verDetalhesEdital(1)">
+                                            <i class="fas fa-eye me-1"></i>Detalhes
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="abrirModalProposta(1)">
+                                            <i class="fas fa-paper-plane me-1"></i>Enviar Proposta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Edital 002/2025</strong>
+                                        <span class="status-badge status-em_andamento">Em Andamento</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Reforma da Escola Central</h6>
+                                    <p class="text-muted">Prefeitura Municipal - Pregão</p>
+                                    <p><strong>Valor Estimado:</strong> R$ 800.000,00</p>
+                                    <p><strong>Prazo para propostas:</strong> 25/01/2025 16:00</p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="verDetalhesEdital(2)">
+                                            <i class="fas fa-eye me-1"></i>Detalhes
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="abrirModalProposta(2)">
+                                            <i class="fas fa-paper-plane me-1"></i>Enviar Proposta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        function carregarMinhasPropostas() {
+            // Implementar carregamento das propostas da empresa
+        }
+
+        function carregarLicitacoesPublicas() {
+            // Implementar carregamento público das licitações
+        }
+
+        function carregarHistoricoBlockchain() {
+            // Implementar carregamento do histórico blockchain
+        }
+
+        function carregarPerfil() {
+            // Implementar carregamento do perfil do usuário
+        }
+
+        // Modal functions
+        function verDetalhesEdital(id) {
+            const modal = new bootstrap.Modal(document.getElementById('modalDetalhesEdital'));
+            // Carregar dados do edital
+            modal.show();
+        }
+
+        function abrirModalProposta(editalId) {
+            document.getElementById('editalIdProposta').value = editalId;
+            const modal = new bootstrap.Modal(document.getElementById('modalEnviarProposta'));
+            modal.show();
+        }
+
+        function enviarProposta() {
+            // Implementar envio da proposta
+            alert('Proposta enviada com sucesso!');
+            bootstrap.Modal.getInstance(document.getElementById('modalEnviarProposta')).hide();
+        }
+
+        // Form functions
+        function limparFormulario() {
+            document.getElementById('formCriarEdital').reset();
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair do sistema?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Event listeners para formulários
+        document.getElementById('formCriarEdital')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Implementar criação do edital
+            alert('Edital criado e publicado com sucesso!');
+            showSection('meus-editais');
+        });
+
+        document.getElementById('btnSalvarRascunho')?.addEventListener('click', function() {
+            // Implementar salvamento como rascunho
+            alert('Edital salvo como rascunho!');
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Licitações - Obras&Blockchain</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --sidebar-width: 240px;
+            --sidebar-collapsed: 80px;
+            --yt-red: #ff0000;
+            --yt-dark: #212121;
+            --yt-dark-light: #3c3c3c;
+            --yt-text: #0f0f0f;
+            --yt-secondary: #606060;
+            --primary: #1976d2;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f9f9f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1060;
+            background: var(--yt-dark);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--yt-dark-light);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--yt-dark);
+            transition: width 0.2s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1000;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--yt-dark);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--yt-dark-light);
+            border-radius: 4px;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--yt-dark-light);
+            min-height: 56px;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 50%;
+            margin-right: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .hamburger:hover {
+            background: var(--yt-dark-light);
+        }
+
+        .logo {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .logo {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar-nav {
+            padding: 12px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px 10px 24px;
+            color: white;
+            text-decoration: none;
+            transition: background 0.2s ease;
+            position: relative;
+            min-height: 40px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--yt-dark-light);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--yt-dark-light);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 24px;
+            flex-shrink: 0;
+            min-width: 24px;
+        }
+
+        .nav-icon i {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .nav-text {
+            font-size: 14px;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar.collapsed .nav-item {
+            padding: 16px;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.2s ease;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 20px 24px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border: none;
+            border-radius: 8px;
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Forms */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-rascunho {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .status-publicado {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-em_andamento {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-finalizado {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-cancelado {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* Tables */
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 16px;
+        }
+
+        .table tbody td {
+            padding: 16px;
+            border-top: 1px solid #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1050;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 80px 16px 16px 16px;
+            }
+            
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+        }
+
+        /* Utilities */
+        .d-none { display: none !important; }
+        .text-center { text-align: center !important; }
+        .text-muted { color: #6c757d !important; }
+        .fw-bold { font-weight: bold !important; }
+        .mb-0 { margin-bottom: 0 !important; }
+        .mb-3 { margin-bottom: 1rem !important; }
+        .me-2 { margin-right: 0.5rem !important; }
+        .mt-3 { margin-top: 1rem !important; }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="hamburger" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">Obras&Blockchain</div>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-item active" data-section="dashboard">
+                    <div class="nav-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <span class="nav-text">Dashboard</span>
+                </div>
+                
+                <!-- Menu para Órgão Governamental -->
+                <div class="nav-item governo-only" data-section="criar-edital">
+                    <div class="nav-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <span class="nav-text">Criar Edital</span>
+                </div>
+                
+                <div class="nav-item governo-only" data-section="meus-editais">
+                    <div class="nav-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <span class="nav-text">Meus Editais</span>
+                </div>
+                
+                <!-- Menu para Empresas -->
+                <div class="nav-item empresa-only d-none" data-section="editais-disponiveis">
+                    <div class="nav-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <span class="nav-text">Editais Disponíveis</span>
+                </div>
+                
+                <div class="nav-item empresa-only d-none" data-section="minhas-propostas">
+                    <div class="nav-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <span class="nav-text">Minhas Propostas</span>
+                </div>
+                
+                <!-- Menu Público -->
+                <div class="nav-item" data-section="licitacoes-publicas">
+                    <div class="nav-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <span class="nav-text">Licitações Públicas</span>
+                </div>
+                
+                <div class="nav-item" data-section="historico">
+                    <div class="nav-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <span class="nav-text">Histórico</span>
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-item" data-section="perfil">
+                    <div class="nav-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="nav-text">Perfil</span>
+                </div>
+                
+                <div class="nav-item" onclick="logout()">
+                    <div class="nav-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <span class="nav-text">Sair</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        
+        <!-- Dashboard Section -->
+        <div class="content-section active" id="dashboard">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        <small class="text-muted" id="userWelcome">Bem-vindo ao sistema</small>
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-contract fa-3x text-primary mb-3"></i>
+                            <h3 class="mb-0" id="totalEditais">0</h3>
+                            <p class="text-muted">Total de Editais</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                            <h3 class="mb-0" id="editaisAbertos">0</h3>
+                            <p class="text-muted">Editais em Andamento</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-paper-plane fa-3x text-success mb-3"></i>
+                            <h3 class="mb-0" id="totalPropostas">0</h3>
+                            <p class="text-muted">Propostas Enviadas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
+                            <h3 class="mb-0" id="licitacoesFinalizadas">0</h3>
+                            <p class="text-muted">Finalizadas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Atividades Recentes -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-clock me-2"></i>Atividades Recentes
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="atividadesRecentes">
+                                <p class="text-muted text-center">Carregando atividades...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Criar Edital Section (Governo) -->
+        <div class="content-section" id="criar-edital">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-plus-circle me-3"></i>Criar Novo Edital
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form id="formCriarEdital">
+                        <div class="row">
+                            <!-- Informações Básicas -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Informações Básicas
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="numeroEdital" class="form-label">Número do Edital *</label>
+                                    <input type="text" class="form-control" id="numeroEdital" required 
+                                           placeholder="Ex: 001/2025">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modalidade" class="form-label">Modalidade *</label>
+                                    <select class="form-select" id="modalidade" required>
+                                        <option value="">Selecione a modalidade</option>
+                                        <option value="concorrencia">Concorrência</option>
+                                        <option value="tomada_precos">Tomada de Preços</option>
+                                        <option value="convite">Convite</option>
+                                        <option value="pregao">Pregão</option>
+                                        <option value="concurso">Concurso</option>
+                                        <option value="leilao">Leilão</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="titulo" class="form-label">Título do Edital *</label>
+                                    <input type="text" class="form-control" id="titulo" required 
+                                           placeholder="Ex: Construção de Ponte sobre o Rio...">
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="descricao" class="form-label">Descrição/Objeto da Licitação *</label>
+                                    <textarea class="form-control" id="descricao" rows="4" required 
+                                              placeholder="Descreva detalhadamente o objeto da licitação, especificações técnicas, etc."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Critérios e Valores -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-gavel me-2"></i>Critérios de Julgamento e Valores
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tipoJulgamento" class="form-label">Tipo de Julgamento *</label>
+                                    <select class="form-select" id="tipoJulgamento" required>
+                                        <option value="">Selecione o critério</option>
+                                        <option value="menor_preco">Menor Preço</option>
+                                        <option value="melhor_tecnica">Melhor Técnica</option>
+                                        <option value="tecnica_preco">Técnica e Preço</option>
+                                        <option value="maior_lance">Maior Lance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valorEstimado" class="form-label">Valor Estimado (R$) *</label>
+                                    <input type="number" class="form-control" id="valorEstimado" step="0.01" required 
+                                           placeholder="0,00">
+                                </div>
+                            </div>
+                            
+                            <!-- Prazos -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-calendar-alt me-2"></i>Prazos e Datas
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dataAbertura" class="form-label">Data de Abertura *</label>
+                                    <input type="datetime-local" class="form-control" id="dataAbertura" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dataEntregaPropostas" class="form-label">Prazo para Entrega de Propostas *</label>
+                                    <input type="datetime-local" class="form-control" id="dataEntregaPropostas" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="dataSessaoPublica" class="form-label">Data da Sessão Pública *</label>
+                                    <input type="datetime-local" class="form-control" id="dataSessaoPublica" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prazoExecucao" class="form-label">Prazo de Execução (dias) *</label>
+                                    <input type="number" class="form-control" id="prazoExecucao" required 
+                                           placeholder="Ex: 90">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="localExecucao" class="form-label">Local de Execução *</label>
+                                    <input type="text" class="form-control" id="localExecucao" required 
+                                           placeholder="Ex: Cidade - Estado">
+                                </div>
+                            </div>
+                            
+                            <!-- Upload do Edital -->
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3 mt-4">
+                                    <i class="fas fa-file-upload me-2"></i>Arquivo do Edital
+                                </h5>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="arquivoEdital" class="form-label">Arquivo do Edital (PDF) *</label>
+                                    <input type="file" class="form-control" id="arquivoEdital" accept=".pdf" required>
+                                    <div class="form-text">Arquivo PDF com o edital completo (máx. 10MB)</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Botões -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex gap-3">
+                                    <button type="button" class="btn btn-outline-primary" id="btnSalvarRascunho">
+                                        <i class="fas fa-save me-2"></i>Salvar como Rascunho
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-bullhorn me-2"></i>Publicar Edital
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                                        <i class="fas fa-times me-2"></i>Limpar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meus Editais Section (Governo) -->
+        <div class="content-section" id="meus-editais">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1>
+                            <i class="fas fa-file-contract me-3"></i>Meus Editais
+                        </h1>
+                        <button class="btn btn-primary" onclick="showSection('criar-edital')">
+                            <i class="fas fa-plus me-2"></i>Novo Edital
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Lista de Editais</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="carregarMeusEditais()">
+                            <i class="fas fa-sync-alt me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Título</th>
+                                    <th>Modalidade</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Status</th>
+                                    <th>Data Abertura</th>
+                                    <th>Propostas</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaMeusEditais">
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Carregando editais...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editais Disponíveis Section (Empresa) -->
+        <div class="content-section" id="editais-disponiveis">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-search me-3"></i>Editais Disponíveis
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="filtroModalidade" class="form-label">Modalidade</label>
+                            <select class="form-select" id="filtroModalidade">
+                                <option value="">Todas</option>
+                                <option value="concorrencia">Concorrência</option>
+                                <option value="tomada_precos">Tomada de Preços</option>
+                                <option value="pregao">Pregão</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtroValorMin" class="form-label">Valor Mínimo (R$)</label>
+                            <input type="number" class="form-control" id="filtroValorMin" placeholder="0,00">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="filtroValorMax" class="form-label">Valor Máximo (R$)</label>
+                            <input type="number" class="form-control" id="filtroValorMax" placeholder="0,00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button class="btn btn-primary w-100" onclick="filtrarEditais()">
+                                    <i class="fas fa-search me-2"></i>Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de Editais -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Editais Abertos para Participação</h5>
+                </div>
+                <div class="card-body">
+                    <div id="listaEditaisDisponiveis">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando editais disponíveis...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Minhas Propostas Section (Empresa) -->
+        <div class="content-section" id="minhas-propostas">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-paper-plane me-3"></i>Minhas Propostas
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Propostas Enviadas</h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="carregarMinhasPropostas()">
+                            <i class="fas fa-sync-alt me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Edital</th>
+                                    <th>Título</th>
+                                    <th>Minha Proposta</th>
+                                    <th>Valor Estimado</th>
+                                    <th>Status</th>
+                                    <th>Data Envio</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaMinhasPropostas">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i>Carregando propostas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Licitações Públicas Section -->
+        <div class="content-section" id="licitacoes-publicas">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-eye me-3"></i>Licitações Públicas
+                        <small class="text-muted">Transparência e Controle Social</small>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Estatísticas Públicas -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-contract fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicTotalEditais">0</h4>
+                            <small>Editais Publicados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body text-center">
+                            <i class="fas fa-clock fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicEditaisAbertos">0</h4>
+                            <small>Em Andamento</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicEditaisFinalizados">0</h4>
+                            <small>Finalizados</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calculator fa-2x mb-2"></i>
+                            <h4 class="mb-0" id="publicValorTotal">R$ 0</h4>
+                            <small>Valor Total</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista Pública de Licitações -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Todas as Licitações
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="listaLicitacoesPublicas">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando licitações públicas...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico Section -->
+        <div class="content-section" id="historico">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-history me-3"></i>Histórico Blockchain
+                        <small class="text-muted">Rastreabilidade Completa</small>
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-link me-2"></i>Cadeia de Blocos
+                        </h5>
+                        <button class="btn btn-outline-primary btn-sm" onclick="carregarHistoricoBlockchain()">
+                            <i class="fas fa-sync-alt me-1"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="historicoBlockchain">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando histórico...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perfil Section -->
+        <div class="content-section" id="perfil">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="mb-4">
+                        <i class="fas fa-user me-3"></i>Meu Perfil
+                    </h1>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações da Conta</h5>
+                </div>
+                <div class="card-body">
+                    <div id="perfilUsuario">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Carregando perfil...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal para Detalhes do Edital -->
+    <div class="modal fade" id="modalDetalhesEdital" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-contract me-2"></i>Detalhes do Edital
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalDetalhesBody">
+                    <!-- Conteúdo carregado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Enviar Proposta -->
+    <div class="modal fade" id="modalEnviarProposta" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-paper-plane me-2"></i>Enviar Proposta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formEnviarProposta">
+                        <input type="hidden" id="editalIdProposta">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Edital</label>
+                            <div id="infoEditalProposta" class="form-control-plaintext bg-light p-2 rounded">
+                                <!-- Info do edital -->
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valorProposta" class="form-label">Valor da Proposta (R$) *</label>
+                                    <input type="number" class="form-control" id="valorProposta" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="prazoExecucaoProposta" class="form-label">Prazo de Execução (dias) *</label>
+                                    <input type="number" class="form-control" id="prazoExecucaoProposta" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricaoProposta" class="form-label">Descrição da Proposta *</label>
+                            <textarea class="form-control" id="descricaoProposta" rows="4" required
+                                      placeholder="Descreva sua proposta técnica e metodologia..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="arquivoProposta" class="form-label">Arquivo da Proposta (PDF) *</label>
+                            <input type="file" class="form-control" id="arquivoProposta" accept=".pdf" required>
+                            <div class="form-text">Arquivo PDF com a proposta completa (máx. 5MB)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="documentosAnexos" class="form-label">Documentos Anexos</label>
+                            <input type="file" class="form-control" id="documentosAnexos" multiple
+                                   accept=".pdf,.doc,.docx,.jpg,.png">
+                            <div class="form-text">Documentos complementares (máx. 2MB cada)</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="enviarProposta()">
+                        <i class="fas fa-paper-plane me-1"></i>Enviar Proposta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Estado global da aplicação
+        let currentUser = null;
+        let userType = 'publico'; // governo, empresa, publico
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSidebar();
+            checkUserLogin();
+            loadDashboard();
+        });
+
+        // Sidebar functionality
+        function initializeSidebar() {
+            const toggler = document.getElementById('toggleBtn');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+
+            function isMobile() {
+                return window.innerWidth < 769;
+            }
+
+            function toggleSidebar() {
+                if (isMobile()) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                }
+            }
+
+            toggler.addEventListener('click', toggleSidebar);
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+            // Close sidebar on mobile when clicking outside
+            document.addEventListener('click', (e) => {
+                if (isMobile() && sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    !toggler.contains(e.target) && 
+                    !mobileMenuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Handle resize
+            window.addEventListener('resize', () => {
+                if (!isMobile()) {
+                    sidebar.classList.remove('active');
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    sidebar.classList.toggle('collapsed', isCollapsed);
+                } else {
+                    sidebar.classList.remove('collapsed');
+                }
+            });
+
+            // Initialize sidebar state
+            if (!isMobile()) {
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                sidebar.classList.toggle('collapsed', isCollapsed);
+            }
+
+            // Navigation items
+            document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    showSection(section);
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Load section specific data
+                switch(sectionId) {
+                    case 'meus-editais':
+                        carregarMeusEditais();
+                        break;
+                    case 'editais-disponiveis':
+                        carregarEditaisDisponiveis();
+                        break;
+                    case 'minhas-propostas':
+                        carregarMinhasPropostas();
+                        break;
+                    case 'licitacoes-publicas':
+                        carregarLicitacoesPublicas();
+                        break;
+                    case 'historico':
+                        carregarHistoricoBlockchain();
+                        break;
+                    case 'perfil':
+                        carregarPerfil();
+                        break;
+                }
+            }
+        }
+
+        // User management
+        function checkUserLogin() {
+            // Simular usuário logado para demonstração
+            // Em produção, verificar sessão/token
+            currentUser = {
+                id: 1,
+                username: 'demo_governo',
+                type: 'governo',
+                orgao: 'Prefeitura Municipal'
+            };
+            userType = currentUser.type;
+            
+            updateUIForUserType();
+            updateUserWelcome();
+        }
+
+        function updateUIForUserType() {
+            const governoItems = document.querySelectorAll('.governo-only');
+            const empresaItems = document.querySelectorAll('.empresa-only');
+            
+            if (userType === 'governo') {
+                governoItems.forEach(item => item.classList.remove('d-none'));
+                empresaItems.forEach(item => item.classList.add('d-none'));
+            } else if (userType === 'empresa') {
+                governoItems.forEach(item => item.classList.add('d-none'));
+                empresaItems.forEach(item => item.classList.remove('d-none'));
+            } else {
+                governoItems.forEach(item => item.classList.add('d-none'));
+                empresaItems.forEach(item => item.classList.add('d-none'));
+            }
+        }
+
+        function updateUserWelcome() {
+            const welcomeElement = document.getElementById('userWelcome');
+            if (currentUser) {
+                const typeLabel = {
+                    'governo': 'Órgão Público',
+                    'empresa': 'Empresa',
+                    'publico': 'Usuário Público'
+                };
+                welcomeElement.textContent = `Bem-vindo, ${currentUser.username} (${typeLabel[userType]})`;
+            }
+        }
+
+        // Dashboard
+        function loadDashboard() {
+            // Simular dados para demonstração
+            document.getElementById('totalEditais').textContent = '12';
+            document.getElementById('editaisAbertos').textContent = '5';
+            document.getElementById('totalPropostas').textContent = '23';
+            document.getElementById('licitacoesFinalizadas').textContent = '7';
+            
+            // Carregar atividades recentes
+            const atividades = document.getElementById('atividadesRecentes');
+            atividades.innerHTML = `
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>Novo edital publicado</strong>
+                            <small>2 horas atrás</small>
+                        </div>
+                        <p class="mb-0">Edital 001/2025 - Construção de Ponte</p>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>Proposta recebida</strong>
+                            <small>4 horas atrás</small>
+                        </div>
+                        <p class="mb-0">Empresa XYZ enviou proposta para Edital 002/2025</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Edital management
+        function carregarMeusEditais() {
+            const tabela = document.getElementById('tabelaMeusEditais');
+            
+            // Simular dados
+            setTimeout(() => {
+                tabela.innerHTML = `
+                    <tr>
+                        <td>001/2025</td>
+                        <td>Construção de Ponte Municipal</td>
+                        <td><span class="badge bg-primary">Concorrência</span></td>
+                        <td>R$ 1.250.000,00</td>
+                        <td><span class="status-badge status-publicado">Publicado</span></td>
+                        <td>15/01/2025 09:00</td>
+                        <td><span class="badge bg-info">3</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="verDetalhesEdital(1)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editarEdital(1)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="verPropostas(1)">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002/2025</td>
+                        <td>Reforma da Escola Central</td>
+                        <td><span class="badge bg-warning text-dark">Pregão</span></td>
+                        <td>R$ 800.000,00</td>
+                        <td><span class="status-badge status-em_andamento">Em Andamento</span></td>
+                        <td>10/01/2025 14:00</td>
+                        <td><span class="badge bg-info">5</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="verDetalhesEdital(2)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editarEdital(2)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" onclick="verPropostas(2)">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }, 1000);
+        }
+
+        function carregarEditaisDisponiveis() {
+            const lista = document.getElementById('listaEditaisDisponiveis');
+            
+            setTimeout(() => {
+                lista.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Edital 001/2025</strong>
+                                        <span class="status-badge status-publicado">Aberto</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Construção de Ponte Municipal</h6>
+                                    <p class="text-muted">Prefeitura Municipal - Concorrência</p>
+                                    <p><strong>Valor Estimado:</strong> R$ 1.250.000,00</p>
+                                    <p><strong>Prazo para propostas:</strong> 20/01/2025 18:00</p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="verDetalhesEdital(1)">
+                                            <i class="fas fa-eye me-1"></i>Detalhes
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="abrirModalProposta(1)">
+                                            <i class="fas fa-paper-plane me-1"></i>Enviar Proposta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Edital 002/2025</strong>
+                                        <span class="status-badge status-em_andamento">Em Andamento</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Reforma da Escola Central</h6>
+                                    <p class="text-muted">Prefeitura Municipal - Pregão</p>
+                                    <p><strong>Valor Estimado:</strong> R$ 800.000,00</p>
+                                    <p><strong>Prazo para propostas:</strong> 25/01/2025 16:00</p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="verDetalhesEdital(2)">
+                                            <i class="fas fa-eye me-1"></i>Detalhes
+                                        </button>
+                                        <button class="btn btn-success btn-sm" onclick="abrirModalProposta(2)">
+                                            <i class="fas fa-paper-plane me-1"></i>Enviar Proposta
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }, 1000);
+        }
+
+        function carregarMinhasPropostas() {
+            // Implementar carregamento das propostas da empresa
+        }
+
+        function carregarLicitacoesPublicas() {
+            // Implementar carregamento público das licitações
+        }
+
+        function carregarHistoricoBlockchain() {
+            // Implementar carregamento do histórico blockchain
+        }
+
+        function carregarPerfil() {
+            // Implementar carregamento do perfil do usuário
+        }
+
+        // Modal functions
+        function verDetalhesEdital(id) {
+            const modal = new bootstrap.Modal(document.getElementById('modalDetalhesEdital'));
+            // Carregar dados do edital
+            modal.show();
+        }
+
+        function abrirModalProposta(editalId) {
+            document.getElementById('editalIdProposta').value = editalId;
+            const modal = new bootstrap.Modal(document.getElementById('modalEnviarProposta'));
+            modal.show();
+        }
+
+        function enviarProposta() {
+            // Implementar envio da proposta
+            alert('Proposta enviada com sucesso!');
+            bootstrap.Modal.getInstance(document.getElementById('modalEnviarProposta')).hide();
+        }
+
+        // Form functions
+        function limparFormulario() {
+            document.getElementById('formCriarEdital').reset();
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair do sistema?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Event listeners para formulários
+        document.getElementById('formCriarEdital')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Implementar criação do edital
+            alert('Edital criado e publicado com sucesso!');
+            showSection('meus-editais');
+        });
+
+        document.getElementById('btnSalvarRascunho')?.addEventListener('click', function() {
+            // Implementar salvamento como rascunho
+            alert('Edital salvo como rascunho!');
+        });
+    </script>
+</body>
+</html>
